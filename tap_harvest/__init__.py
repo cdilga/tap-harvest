@@ -223,11 +223,11 @@ def sync_endpoint(schema_name, endpoint=None, path=None, date_fields=None, with_
 
 
 def sync_time_entries():
+    external_reference_schema = load_and_write_schema("external_reference")
+    load_and_write_schema("time_entry_external_reference",
+                              key_properties=["time_entry_id", "external_reference_id"])
     def for_each_time_entry(time_entry, time_extracted):
         # Extract external_reference
-        external_reference_schema = load_and_write_schema("external_reference")
-        load_and_write_schema("time_entry_external_reference",
-                              key_properties=["time_entry_id", "external_reference_id"])
         if time_entry['external_reference'] is not None:
             with Transformer() as transformer:
                 external_reference = time_entry['external_reference']
