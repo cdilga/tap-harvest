@@ -339,9 +339,9 @@ def sync_estimates():
 
 
 def sync_roles():
+    load_and_write_schema("user_roles", key_properties=["user_id", "role_id"])
     def for_each_role(role, time_extracted):
         # Extract user_roles
-        load_and_write_schema("user_roles", key_properties=["user_id", "role_id"])
         for user_id in role['user_ids']:
             pivot_row = {
                 'role_id': role['id'],
@@ -356,6 +356,7 @@ def sync_roles():
 
 
 def sync_users():
+    load_and_write_schema("user_project_tasks", key_properties=["user_id", "project_task_id"])
     def for_each_user(user, time_extracted): #pylint: disable=unused-argument
         def map_user_projects(project_assignment):
             project_assignment['user'] = user
@@ -363,8 +364,6 @@ def sync_users():
 
         def for_each_user_project(user_project_assignment, time_extracted):
             # Extract user_project_tasks
-            load_and_write_schema("user_project_tasks",
-                                  key_properties=["user_id", "project_task_id"])
             for project_task in user_project_assignment['task_assignments']:
                 pivot_row = {
                     'user_id': user['id'],
@@ -421,7 +420,7 @@ def do_sync():
     # them last.
     sync_endpoint("clients")
     sync_endpoint("contacts", object_to_id=['client'])
-    sync_roles()
+    #sync_roles()
 
     # Sync related project objects
     sync_endpoint("projects", object_to_id=['client'])
